@@ -14,6 +14,36 @@
 </head>
 <body>
 
+    <header>
+        <!-- Top Navbar -->
+        <nav>
+            <div class="nav-wrapper orange darken-4">
+                <a href="{{ url_for('get_tasks') }}" class="brand-logo">Task Manager</a>
+                <a href="#" data-target="mobile-demo" class="sidenav-trigger right"><i class="material-icons">menu</i></a>
+                <ul class="right hide-on-med-and-down">
+                    <li><a href="{{ url_for('get_tasks') }}">Home</a></li>
+                    <li><a href="#">Profile</a></li>
+                    <li><a href="#">New Task</a></li>
+                    <li><a href="#">Manage Categories</a></li>
+                    <li><a href="#">Log Out</a></li>
+                    <li><a href="#">Log In</a></li>
+                    <li><a href="#">Register</a></li>
+                </ul>
+            </div>
+        </nav>
+        <!-- Mobile Sidebar -->
+        <ul class="sidenav" id="mobile-demo">
+            <li><h4 class="center-align">Task Manager</h4></li>
+            <li><a href="{{ url_for('get_tasks') }}">Home</a></li>
+            <li><a href="#">Profile</a></li>
+            <li><a href="#">New Task</a></li>
+            <li><a href="#">Manage Categories</a></li>
+            <li><a href="#">Log Out</a></li>
+            <li><a href="#">Log In</a></li>
+            <li><a href="#">Register</a></li>
+        </ul>
+    </header>
+
     {% block content %}
 
     {% endblock %}
