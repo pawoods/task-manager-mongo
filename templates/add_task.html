@@ -7,6 +7,18 @@
         <form class="col s12" method="POST" action="">
             <div class="row">
                 <div class="input-field col s12">
+                    <i class="material-icons prefix">category</i>
+                    <select id="category_name" name="category_name" validate required>
+                        <option value="" disabled selected>Choose a category</option>
+                        {% for cat in categories %}
+                            <option value="{{ cat.category_name }}">{{ cat.category_name }}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="category_name">Task Category</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12">
                     <i class="material-icons prefix">edit_note</i>
                     <input id="task_name" name="task_name" minlength="5"
                     maxlength="50" type="text" class="validate" required>
