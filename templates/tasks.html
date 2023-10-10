@@ -3,31 +3,51 @@
 
     <h3 class="light-blue-text text-darken-4 center-align">All Tasks</h3>
 
-    <ul class="collapsible">
-        {% for task in tasks %}
-            <li>
-                <div class="collapsible-header white-text light-blue darken-4">
-                    <div class="col s3">
-                        <i class="material-icons">expand_more</i>
-                    </div>
-                    <div class="col s9">
-                        {% if session.user|lower == task.created_by|lower %}
-                            <a href="{{ url_for('delete_task', task_id=task._id) }}" class="green btn-small">Done</a>
-                            <a href="{{ url_for('edit_task', task_id=task._id) }}" class="red btn-small">Edit</a>
-                        {% endif %}
-                        <strong>{{ task.task_name }}</strong> : {{ task.due_date }}
-                        {% if task.is_urgent == "on" %}
-                        <i class="material-icons orange-text tooltipped"
-                        data-position="right" data-tooltip="Urgent!">crisis_alert</i>
-                        {% endif %}
-                    </div>
+    <div class="row card-panel grey lighten-5">
+        <form action="{{ url_for('search') }}" method="POST" class="col s12">
+            <div class="row valign-wrapper center-align">
+                <div class="input-field col s12 m8">
+                    <i class="material-icons prefix">search</i>
+                    <input type="text" name="query" id="query" minlength="3" class="validate" required>
+                    <label for="query">Search Tasks</label>
                 </div>
-                <div class="collapsible-body">
-                    <em>{{ task.category_name }}</em>
-                    <p>{{ task.task_description }} - by: {{ task.created_by }}</p>
+                <div class="col s12 m4">
+                    <a href="{{ url_for('get_tasks') }}" class="btn red">Reset</a>
+                    <button type="submit" class="btn green">Search</button>
                 </div>
-            </li>
-        {% endfor %}
-    </ul>
+            </div>
+        </form>
+    </div>
+
+    {% if tasks|length > 0 %}
+        <ul class="collapsible">
+            {% for task in tasks %}
+                <li>
+                    <div class="collapsible-header white-text light-blue darken-4">
+                        <div class="col s3">
+                            <i class="material-icons">expand_more</i>
+                        </div>
+                        <div class="col s9">
+                            {% if (session.user|lower == task.created_by|lower) or (session.user|lower == "admin") %}
+                                <a href="{{ url_for('delete_task', task_id=task._id) }}" class="green btn-small">Done</a>
+                                <a href="{{ url_for('edit_task', task_id=task._id) }}" class="red btn-small">Edit</a>
+                            {% endif %}
+                            <strong>{{ task.task_name }}</strong> : {{ task.due_date }}
+                            {% if task.is_urgent == "on" %}
+                            <i class="material-icons orange-text tooltipped"
+                            data-position="right" data-tooltip="Urgent!">crisis_alert</i>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="collapsible-body">
+                        <em>{{ task.category_name }}</em>
+                        <p>{{ task.task_description }} - by: {{ task.created_by }}</p>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+            <h3 class="red-text text-darken-4 center-align">No results found</h3>
+    {% endif %}
 
 {% endblock %}
