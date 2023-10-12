@@ -112,6 +112,7 @@ def add_task():
         task = {
             "category_name": request.form.get("category_name"),
             "task_name": request.form.get("task_name"),
+            "test_input": request.form.getlist("test_input"),
             "task_description": request.form.get("task_description"),
             "due_date": request.form.get("due_date"),
             "is_urgent": is_urgent,
@@ -132,6 +133,7 @@ def edit_task(task_id):
         edit = {
             "category_name": request.form.get("category_name"),
             "task_name": request.form.get("task_name"),
+            "test_input": request.form.getlist("test_input"),
             "task_description": request.form.get("task_description"),
             "due_date": request.form.get("due_date"),
             "is_urgent": is_urgent,
@@ -185,6 +187,7 @@ def edit_category(category_id):
 
     category = mongo.db.categories.find_one({"_id": ObjectId(category_id)})
     return render_template("edit_category.html", category=category)
+
 
 @app.route("/delete_category/<category_id>")
 def delete_category(category_id):

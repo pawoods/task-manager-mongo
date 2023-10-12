@@ -31,6 +31,18 @@
                     <label for="task_name">Task Name</label>
                 </div>
             </div>
+            <!-- test_input -->
+            <div class="row">
+                <div class="input-field col s12">
+                    Ingedients
+                    <ul>
+                    {% for item in task.test_input %}
+                        <input name="test_input" value="{{ item }}"
+                        minlength="3" maxlength="50" type="text" class="validate">
+                    {% endfor %}
+                    </ul>
+                </div>
+            </div>
             <!-- task_description -->
             <div class="row">
                 <div class="input-field col s12">

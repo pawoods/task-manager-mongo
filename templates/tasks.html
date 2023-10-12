@@ -41,6 +41,13 @@
                     </div>
                     <div class="collapsible-body">
                         <em>{{ task.category_name }}</em>
+                        <ul>
+                        {% for item in task.test_input %}
+                            <li>
+                                {{ item }}
+                            </li>
+                        {% endfor %}
+                        </ul>
                         <p>{{ task.task_description }} - by: {{ task.created_by }}</p>
                     </div>
                 </li>
