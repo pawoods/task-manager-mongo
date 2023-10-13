@@ -109,8 +109,12 @@ def add_task():
     if request.method == "POST":
         # form.getlist() to get list of submmissions with same name
         is_urgent = "on" if request.form.get("is_urgent") else "off"
+        category_name = request.form.get("category_name")
+        category_color = mongo.db.categories.find_one(
+            {"category_name": category_name})["category_color"]
         task = {
             "category_name": request.form.get("category_name"),
+            "category_color": category_color,
             "task_name": request.form.get("task_name"),
             "test_input": request.form.getlist("test_input"),
             "task_description": request.form.get("task_description"),
