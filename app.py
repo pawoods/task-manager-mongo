@@ -166,7 +166,8 @@ def get_categories():
 def add_category():
     if request.method == "POST":
         category = {
-            "category_name": request.form.get("category_name")
+            "category_name": request.form.get("category_name"),
+            "category_color": request.form.get("category_color")
         }
         mongo.db.categories.insert_one(category)
         flash("New category added")
@@ -179,7 +180,8 @@ def add_category():
 def edit_category(category_id):
     if request.method == "POST":
         edit = {
-            "category_name": request.form.get("category_name")
+            "category_name": request.form.get("category_name"),
+            "category_color": request.form.get("category_color")
         }
         mongo.db.categories.replace_one({"_id": ObjectId(category_id)}, edit)
         flash("Category successfully updated")

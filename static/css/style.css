@@ -4,3 +4,9 @@
 .btn-small {
     margin: 5px;
 }
+.test {
+    background-color: red;
+}
+.hidden {
+    display: none;
+}

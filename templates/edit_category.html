@@ -14,6 +14,53 @@
                     <label for="category_name">Category Name</label>
                 </div>
             </div>
+            <!-- category_color -->
+            <div class="row">
+                <!-- current color -->
+                <div class="col s12 center-align">
+                    <label class="btn {{ category.category_color }}">
+                        <input value="yellow" name="category_color" type="radio" required checked/>
+                        <span>{{ category.category_color|capitalize }}</span>
+                    </label>
+                </div>
+                <!-- new color choices -->
+                <div class="col s12 m4 l3 center-align">
+                    <label class="btn yellow">
+                        <input value="yellow" name="category_color" type="radio" required />
+                        <span>Yellow</span>
+                    </label>
+                </div>
+                <div class="col s12 m4 l3 center-align">
+                    <label class="btn red">
+                        <input value="red" name="category_color" type="radio" />
+                        <span>Red</span>
+                    </label>
+                </div>
+                <div class="col s12 m4 l3 center-align">
+                    <label class="btn blue">
+                        <input value="blue" name="category_color" type="radio" />
+                        <span>Blue</span>
+                    </label>
+                </div>
+                <div class="col s12 m4 l3 center-align">
+                    <label class="btn purple">
+                        <input value="purple" class="hidden" name="category_color" type="radio" />
+                        <span>Purple</span>
+                    </label>
+                </div>
+                <div class="col s12 m4 l3 center-align">
+                    <label class="btn green">
+                        <input value="green" name="category_color" type="radio" />
+                        <span>Green</span>
+                    </label>
+                </div>
+                <div class="col s12 m4 l3 center-align">
+                    <label class="btn pink">
+                        <input value="pink" name="category_color" type="radio" />
+                        <span>Pink</span>
+                    </label>
+                </div>
+            </div>
             <!-- submit -->
             <div class="row">
                 <div class="col s12 center-align">
