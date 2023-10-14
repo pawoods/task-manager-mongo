@@ -40,7 +40,7 @@
                         </div>
                     </div>
                     <div class="collapsible-body">
-                        <em>{{ task.category_name }}</em>
+                            <div class="btn {{ task.category.category_color }}">{{ task.category.category_name }}</div>
                         <ul>
                         {% for item in task.test_input %}
                             <li>

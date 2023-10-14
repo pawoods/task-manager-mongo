@@ -19,7 +19,7 @@
                 <!-- current color -->
                 <div class="col s12 center-align">
                     <label class="btn {{ category.category_color }}">
-                        <input value="yellow" name="category_color" type="radio" required checked/>
+                        <input value="{{ category.category_color }}" name="category_color" type="radio" required checked/>
                         <span>{{ category.category_color|capitalize }}</span>
                     </label>
                 </div>
