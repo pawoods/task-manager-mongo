@@ -91,7 +91,8 @@ def profile(username):
     username = mongo.db.users.find_one(
         {"username": session["user"]})["username"]
     if session["user"]:
-        return render_template("profile.html", username=username)
+        tasks = mongo.db.tasks.find({"likes": username})
+        return render_template("profile.html", username=username, tasks=tasks)
 
     return redirect(url_for("bogin"))
 
