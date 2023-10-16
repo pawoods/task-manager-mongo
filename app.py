@@ -68,11 +68,11 @@ def bogin():
             # check hashed password matches user input
             if check_password_hash(
                     existing_user["password"], request.form.get("password")):
-                        session["user"] = request.form.get("username").lower()
-                        flash("Welcome, {}".format(
-                            request.form.get("username")))
-                        return redirect(url_for(
-                            "profile", username=session["user"]))
+                session["user"] = request.form.get("username").lower()
+                flash("Welcome, {}".format(
+                    request.form.get("username")))
+                return redirect(url_for(
+                    "profile", username=session["user"]))
             else:
                 # invalid password match
                 flash("Incorrect username and/or password")
@@ -203,6 +203,20 @@ def delete_category(category_id):
     mongo.db.categories.delete_one({"_id": ObjectId(category_id)})
     flash("Category successfully deleted")
     return redirect(url_for("get_categories"))
+
+
+@app.route("/add_like/<task_id>")
+def add_like(task_id):
+    likes = mongo.db.tasks.find_one({"_id": ObjectId(task_id)})["likes"]
+    username = mongo.db.users.find_one(
+        {"username": session["user"]})["username"]
+    if username in likes:
+        mongo.db.tasks.update_one({"_id": ObjectId(task_id)}, {
+            "$pull": {"likes": username}})
+        return redirect(url_for("get_tasks"))
+    mongo.db.tasks.update_one({"_id": ObjectId(task_id)}, {
+        "$push": {"likes": username}})
+    return redirect(url_for("get_tasks"))
 
 
 if __name__ == "__main__":
