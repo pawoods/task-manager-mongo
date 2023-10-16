@@ -32,7 +32,15 @@
                                 <a href="{{ url_for('delete_task', task_id=task._id) }}" class="green btn-small">Done</a>
                                 <a href="{{ url_for('edit_task', task_id=task._id) }}" class="red btn-small">Edit</a>
                             {% endif %}
-                            <a href="{{ url_for('add_like', task_id=task._id) }}" class="pink btn-small">Likes: {{ task.likes|length }}</a>
+                            {% if session.user %}
+                                {% if session.user|lower in task.likes %}
+                                    <a href="{{ url_for('add_like', task_id=task._id) }}" class="pink btn-small">Likes: {{ task.likes|length }}</a>
+                                {% else %}
+                                    <a href="{{ url_for('add_like', task_id=task._id) }}" class="grey btn-small">Likes: {{ task.likes|length }}</a>
+                                {% endif %}
+                            {% else %}
+                                <div href="{{ url_for('add_like', task_id=task._id) }}" class="grey btn-small">Likes: {{ task.likes|length }}</div>
+                            {% endif %}
                             <strong>{{ task.task_name }}</strong> : {{ task.due_date }}
                             {% if task.is_urgent == "on" %}
                             <i class="material-icons orange-text tooltipped"

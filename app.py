@@ -120,7 +120,8 @@ def add_task():
             "task_description": request.form.get("task_description"),
             "due_date": request.form.get("due_date"),
             "is_urgent": is_urgent,
-            "created_by": session["user"]
+            "created_by": session["user"],
+            "likes": []
         }
         mongo.db.tasks.insert_one(task)
         flash("Task successfully added")
@@ -189,9 +190,13 @@ def edit_category(category_id):
             "category_name": request.form.get("category_name"),
             "category_color": request.form.get("category_color")
         }
+        mongo.db.categories.update_one({"_id": ObjectId(category_id)}, {
+            "$set": edit})
         mongo.db.tasks.update_many({"category._id": ObjectId(category_id)}, {
-            "$set": {"category": edit}})
-        mongo.db.categories.replace_one({"_id": ObjectId(category_id)}, edit)
+            "$set": {
+                "category.category_name": request.form.get("category_name"),
+                "category.category_color": request.form.get("category_color")
+            }})
         flash("Category successfully updated")
         return redirect(url_for("get_categories"))
 
