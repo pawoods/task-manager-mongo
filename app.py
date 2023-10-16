@@ -136,16 +136,16 @@ def edit_task(task_id):
         is_urgent = "on" if request.form.get("is_urgent") else "off"
         category = mongo.db.categories.find_one(
             {"category_name": request.form.get("category_name")})
-        edit = {
-            "category": category,
-            "task_name": request.form.get("task_name"),
-            "test_input": request.form.getlist("test_input"),
-            "task_description": request.form.get("task_description"),
-            "due_date": request.form.get("due_date"),
-            "is_urgent": is_urgent,
-            "created_by": session["user"]
-        }
-        mongo.db.tasks.replace_one({"_id": ObjectId(task_id)}, edit)
+        mongo.db.tasks.update_one({"_id": ObjectId(task_id)}, {
+            "$set": {
+                "category": category,
+                "task_name": request.form.get("task_name"),
+                "test_input": request.form.getlist("test_input"),
+                "task_description": request.form.get("task_description"),
+                "due_date": request.form.get("due_date"),
+                "is_urgent": is_urgent,
+                "created_by": session["user"]
+            }})
         flash("Task successfully updated")
         return redirect(url_for("get_tasks"))
 
