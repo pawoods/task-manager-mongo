@@ -33,7 +33,7 @@
                                 <a href="{{ url_for('edit_task', task_id=task._id) }}" class="red btn-small">Edit</a>
                             {% endif %}
                             {% if session.user %}
-                                {% if session.user|lower in task.likes %}
+                                {% if session.user in task.likes %}
                                     <a href="{{ url_for('add_like', task_id=task._id) }}" class="pink btn-small">Likes: {{ task.likes|length }}</a>
                                 {% else %}
                                     <a href="{{ url_for('add_like', task_id=task._id) }}" class="grey btn-small">Likes: {{ task.likes|length }}</a>

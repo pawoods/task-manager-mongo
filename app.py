@@ -62,9 +62,9 @@ def register():
         mongo.db.users.insert_one(register)
 
         # put new user into "session" cookie
-        session["user"] = request.form.get("username")
+        session["user"] = user_id
         flash("Registration successful!")
-        return redirect(url_for("profile", username=session["user"]))
+        return redirect(url_for("profile", user=session["user"]))
 
     return render_template("register.html")
 
@@ -76,15 +76,17 @@ def bogin():
         existing_user = mongo.db.users.find_one(
             {"username": request.form.get("username")})
 
+        user_id = existing_user["user_id"]
+
         if existing_user:
             # check hashed password matches user input
             if check_password_hash(
                     existing_user["password"], request.form.get("password")):
-                session["user"] = request.form.get("username")
+                session["user"] = user_id
                 flash("Welcome, {}".format(
                     request.form.get("username")))
                 return redirect(url_for(
-                    "profile", username=session["user"]))
+                    "profile", user=session["user"]))
             else:
                 # invalid password match
                 flash("Incorrect username and/or password")
@@ -97,14 +99,14 @@ def bogin():
     return render_template("bogin.html")
 
 
-@app.route("/profile/<username>", methods=["GET", "POST"])
-def profile(username):
+@app.route("/profile/<user>", methods=["GET", "POST"])
+def profile(user):
     # Grab session user's username from database
-    username = mongo.db.users.find_one(
-        {"username": session["user"]})["username"]
+    user = mongo.db.users.find_one(
+        {"user_id": session["user"]})
     if session["user"]:
-        tasks = mongo.db.tasks.find({"likes": username})
-        return render_template("profile.html", username=username, tasks=tasks)
+        tasks = mongo.db.tasks.find({"likes": user["user_id"]})
+        return render_template("profile.html", user=user, tasks=tasks)
 
     return redirect(url_for("bogin"))
 
@@ -123,8 +125,7 @@ def add_task():
         # form.getlist() to get list of submmissions with same name
         is_urgent = "on" if request.form.get("is_urgent") else "off"
         category = mongo.db.categories.find_one(
-            {"category_name": request.form.get("category_name")}
-        )
+            {"category_name": request.form.get("category_name")})
         task = {
             "category": category,
             "task_name": request.form.get("task_name"),
@@ -227,7 +228,7 @@ def delete_category(category_id):
 def add_like(task_id):
     likes = mongo.db.tasks.find_one({"_id": ObjectId(task_id)})["likes"]
     username = mongo.db.users.find_one(
-        {"username": session["user"]})["username"]
+        {"user_id": session["user"]})["user_id"]
     if username in likes:
         mongo.db.tasks.update_one({"_id": ObjectId(task_id)}, {
             "$pull": {"likes": username}})
