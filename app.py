@@ -37,20 +37,32 @@ def register():
     if request.method == "POST":
         # check if username exists in db
         existing_user = mongo.db.users.find_one(
-            {"username": request.form.get("username").lower()})
+            {"username": request.form.get("username")})
 
         if existing_user:
             flash("Username already exists")
             return redirect(url_for("register"))
 
+        user_id = 1
+        existing_id = True
+
+        while existing_id:
+            if not mongo.db.users.find_one({"user_id": user_id}):
+                existing_id = False
+                break
+            user_id += 1
+
         register = {
-            "username": request.form.get("username").lower(),
-            "password": generate_password_hash(request.form.get("password"))
+            "user_id": user_id,
+            "username": request.form.get("username"),
+            "password": generate_password_hash(request.form.get("password")),
+            "is_super": False,
+            "is_admin": False
         }
         mongo.db.users.insert_one(register)
 
         # put new user into "session" cookie
-        session["user"] = request.form.get("username").lower()
+        session["user"] = request.form.get("username")
         flash("Registration successful!")
         return redirect(url_for("profile", username=session["user"]))
 
@@ -62,13 +74,13 @@ def bogin():
     if request.method == "POST":
         # check if username exists in db
         existing_user = mongo.db.users.find_one(
-            {"username": request.form.get("username").lower()})
+            {"username": request.form.get("username")})
 
         if existing_user:
             # check hashed password matches user input
             if check_password_hash(
                     existing_user["password"], request.form.get("password")):
-                session["user"] = request.form.get("username").lower()
+                session["user"] = request.form.get("username")
                 flash("Welcome, {}".format(
                     request.form.get("username")))
                 return redirect(url_for(
