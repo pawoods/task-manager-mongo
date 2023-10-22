@@ -135,18 +135,17 @@ def add_task():
 
     if request.method == "POST":
         # form.getlist() to get list of submmissions with same name
-        categories = request.form.getlist("category_name")
+        selected_categories = request.form.getlist("category_name")
         task_categories = []
-        for category in categories:
+        for category in selected_categories:
             category_object = mongo.db.categories.find_one(
-            {"category_name": category})
-
+                {"category_name": category})
             task_categories.append(category_object)
 
         is_urgent = "on" if request.form.get("is_urgent") else "off"
 
         task = {
-            "category": task_categories,
+            "categories": task_categories,
             "task_name": request.form.get("task_name"),
             "ingredients": request.form.getlist("ingredient"),
             "task_description": request.form.get("task_description"),
@@ -170,11 +169,16 @@ def add_task():
 def edit_task(task_id):
     if request.method == "POST":
         is_urgent = "on" if request.form.get("is_urgent") else "off"
-        category = mongo.db.categories.find_one(
-            {"category_name": request.form.get("category_name")})
+        selected_categories = request.form.getlist("category_name")
+        task_categories = []
+        for category in selected_categories:
+            category_object = mongo.db.categories.find_one(
+                {"category_name": category})
+            task_categories.append(category_object)
+
         mongo.db.tasks.update_one({"_id": ObjectId(task_id)}, {
             "$set": {
-                "category": category,
+                "categories": task_categories,
                 "task_name": request.form.get("task_name"),
                 "test_input": request.form.getlist("test_input"),
                 "task_description": request.form.get("task_description"),
@@ -226,11 +230,21 @@ def edit_category(category_id):
         }
         mongo.db.categories.update_one({"_id": ObjectId(category_id)}, {
             "$set": edit})
-        mongo.db.tasks.update_many({"category._id": ObjectId(category_id)}, {
+
+        query = {
+            "categories._id": ObjectId(category_id)
+        }
+        update = {
             "$set": {
-                "category.category_name": request.form.get("category_name"),
-                "category.category_color": request.form.get("category_color")
-            }})
+                "categories.$.category_name":
+                    request.form.get("category_name"),
+                "categories.$.category_color":
+                    request.form.get("category_color")
+            }
+        }
+
+        mongo.db.tasks.update_many(query, update)
+
         flash("Category successfully updated")
         return redirect(url_for("get_categories"))
 
@@ -241,8 +255,8 @@ def edit_category(category_id):
 @app.route("/delete_category/<category_id>")
 def delete_category(category_id):
     mongo.db.tasks.update_many(
-        {"category._id": ObjectId(category_id)},
-        {"$pull": {"category": {"_id": ObjectId(category_id)}}})
+        {"categories._id": ObjectId(category_id)},
+        {"$pull": {"categories": {"_id": ObjectId(category_id)}}})
     mongo.db.categories.delete_one({"_id": ObjectId(category_id)})
     flash("Category successfully deleted")
     return redirect(url_for("get_categories"))
