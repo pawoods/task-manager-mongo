@@ -7,18 +7,31 @@
             <h3 class="center-align light-blue-text text-darken-4">
             {{ user.username }}'s Profile
             </h3>
+            <p>{{ test }}</p>
         </div>
     </div>
 </div>
 
 <div class="row">
-    {% for task in tasks %}
-        <div class="col s12 m6 l3 center-align">
-            <div class="card">
-                <span>{{ task.task_name }}</span>
+    <h4 class="center-align">Liked Tasks</h4>
+        {% for task in tasks %}
+            <div class="col s12 m6 l3 center-align">
+                <div class="card">
+                    <span>{{ task.task_name }}</span>
+                </div>
             </div>
-        </div>
-    {% endfor %}
+        {% endfor %}
+</div>
+
+<div class="row">
+    <h4 class="center-align">Owned Tasks</h4>
+        {% for owned in user_owned %}
+            <div class="col s12 m6 l3 center-align">
+                <div class="card">
+                    <span>{{ owned.task_name }}</span>
+                </div>
+            </div>
+        {% endfor %}
 </div>
 
 {% endblock %}

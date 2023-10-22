@@ -9,8 +9,8 @@
             <div class="row">
                 <div class="input-field col s12">
                     <i class="material-icons prefix">category</i>
-                    <select id="category_name" name="category_name" validate required>
-                        <option value="" disabled selected>Choose a category</option>
+                    <select id="category_name" name="category_name" multiple validate required>
+                        <option value="" disabled>Choose a category</option>
                         {% for cat in categories %}
                             <option value="{{ cat.category_name }}">{{ cat.category_name }}</option>
                         {% endfor %}
@@ -28,30 +28,14 @@
                 </div>
             </div>
             <!-- test_input -->
-            <div class="row">
-                <div class="input-field col s12">
-                    Ingedients
-                    <ul>
-                        <li class="ingredients">
-                            <div class="row">
-                                <div class="col s10">
-                                    <input name="test_input" minlength="3" maxlength="50" type="text" class="validate">
-                                </div>
-                                <div class="col s2">
-                                    <div class="row">
-                                        <div class="col s6">
-                                            <i class="material-icons" id="add">add</i>
-                                        </div>
-                                        <div class="col s6">
-                                            <i class="material-icons">remove</i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+            Ingedients
+            <ul id="ingredients">
+                <li class="row">
+                    <input class="col s10" type="text" name="ingredient">
+                    <i class="col s1 center-align material-icons add" onclick="add(event)">add</i>
+                    <i class="col s1 center-align material-icons remove" onclick="remove(event)">remove</i>
+                </li>
+            </ul>
             <!-- task_description -->
             <div class="row">
                 <div class="input-field col s12">

@@ -22,6 +22,10 @@ mongo = PyMongo(app)
 @app.route("/get_tasks")
 def get_tasks():
     tasks = list(mongo.db.tasks.find())
+    if session:
+        user = mongo.db.users.find_one({"user_id": session["user"]})
+        return render_template("tasks.html", tasks=tasks, user=user)
+
     return render_template("tasks.html", tasks=tasks)
 
 
@@ -76,13 +80,11 @@ def bogin():
         existing_user = mongo.db.users.find_one(
             {"username": request.form.get("username")})
 
-        user_id = existing_user["user_id"]
-
         if existing_user:
             # check hashed password matches user input
             if check_password_hash(
                     existing_user["password"], request.form.get("password")):
-                session["user"] = user_id
+                session["user"] = existing_user["user_id"]
                 flash("Welcome, {}".format(
                     request.form.get("username")))
                 return redirect(url_for(
@@ -104,9 +106,16 @@ def profile(user):
     # Grab session user's username from database
     user = mongo.db.users.find_one(
         {"user_id": session["user"]})
+    test = int(session["user"])
     if session["user"]:
         tasks = mongo.db.tasks.find({"likes": user["user_id"]})
-        return render_template("profile.html", user=user, tasks=tasks)
+        user_owned = mongo.db.tasks.find(
+            {"created_by.username": user["username"]})
+        return render_template(
+            "profile.html",
+            user=user, tasks=tasks,
+            user_owned=user_owned, test=test
+        )
 
     return redirect(url_for("bogin"))
 
@@ -121,19 +130,32 @@ def bogout():
 
 @app.route("/add_task", methods=["GET", "POST"])
 def add_task():
+    user = mongo.db.users.find_one(
+        {"user_id": session["user"]})
+
     if request.method == "POST":
         # form.getlist() to get list of submmissions with same name
+        categories = request.form.getlist("category_name")
+        task_categories = []
+        for category in categories:
+            category_object = mongo.db.categories.find_one(
+            {"category_name": category})
+
+            task_categories.append(category_object)
+
         is_urgent = "on" if request.form.get("is_urgent") else "off"
-        category = mongo.db.categories.find_one(
-            {"category_name": request.form.get("category_name")})
+
         task = {
-            "category": category,
+            "category": task_categories,
             "task_name": request.form.get("task_name"),
-            "test_input": request.form.getlist("test_input"),
+            "ingredients": request.form.getlist("ingredient"),
             "task_description": request.form.get("task_description"),
             "due_date": request.form.get("due_date"),
             "is_urgent": is_urgent,
-            "created_by": session["user"],
+            "created_by": {
+                "username": user["username"],
+                "user_id": session["user"]
+            },
             "likes": []
         }
         mongo.db.tasks.insert_one(task)
@@ -141,7 +163,7 @@ def add_task():
         return redirect(url_for("get_tasks"))
 
     categories = mongo.db.categories.find().sort("category_name", 1)
-    return render_template("add_task.html", categories=categories)
+    return render_template("add_task.html", categories=categories, user=user)
 
 
 @app.route("/edit_task/<task_id>", methods=["GET", "POST"])
@@ -157,8 +179,7 @@ def edit_task(task_id):
                 "test_input": request.form.getlist("test_input"),
                 "task_description": request.form.get("task_description"),
                 "due_date": request.form.get("due_date"),
-                "is_urgent": is_urgent,
-                "created_by": session["user"]
+                "is_urgent": is_urgent
             }})
         flash("Task successfully updated")
         return redirect(url_for("get_tasks"))
@@ -219,6 +240,9 @@ def edit_category(category_id):
 
 @app.route("/delete_category/<category_id>")
 def delete_category(category_id):
+    mongo.db.tasks.update_many(
+        {"category._id": ObjectId(category_id)},
+        {"$pull": {"category": {"_id": ObjectId(category_id)}}})
     mongo.db.categories.delete_one({"_id": ObjectId(category_id)})
     flash("Category successfully deleted")
     return redirect(url_for("get_categories"))

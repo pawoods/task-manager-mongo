@@ -21,7 +21,12 @@
                     </div>
                     <div class="card-action">
                         <a href="{{ url_for('edit_category', category_id=cat._id) }}" class="btn-small green">Edit</a>
-                        <a href="{{ url_for('delete_category', category_id=cat._id) }}" class="btn-small red">Delete</a>
+                        <a href="#" onclick="showModal(event)" class="btn-small red">Delete</a>
+                        <div class="customModal hidden">
+                            <div class="customModal-content">
+                                <a href="{{ url_for('delete_category', category_id=cat._id) }}" class="btn-small red">Delete</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
