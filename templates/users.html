@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+
+{% if user.is_admin %}
+    <div class="row">
+        <div class="col s12 m8 offset-m2">
+            <div class="card-panel">
+                <h3 class="center-align light-blue-text text-darken-4">
+                    Welcome {{ user.username }}
+                </h3>
+            </div>
+        </div>
+    </div>
+    {% for u in users %}
+
+        <h4>{{ u.username }}</h4>
+        <p>{{ u.first_name }} {{ u.last_name }}</p>
+        {% if u.is_super %}
+            <a href="{{ url_for('add_super', user_id=u._id) }}" class="pink btn-small">Super <i class="material-icons">done</i></a>
+        {% else %}
+            <a href="{{ url_for('add_super', user_id=u._id) }}" class="grey btn-small">Super <i class="material-icons">close</i></a>
+        {% endif %}
+
+    {% endfor %}
+
+{% else %}
+    <div class="row">
+        <div class="col s12 m8 offset-m2">
+            <div class="card-panel">
+                <h3 class="center-align light-blue-text text-darken-4">
+                    {{ user.username }}, you do not have permission to access this page.
+                </h3>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+{% endblock %}

@@ -106,15 +106,14 @@ def profile(user):
     # Grab session user's username from database
     user = mongo.db.users.find_one(
         {"user_id": session["user"]})
-    test = int(session["user"])
     if session["user"]:
         tasks = mongo.db.tasks.find({"likes": user["user_id"]})
         user_owned = mongo.db.tasks.find(
-            {"created_by.username": user["username"]})
+            {"created_by.user_id": user["user_id"]})
         return render_template(
             "profile.html",
             user=user, tasks=tasks,
-            user_owned=user_owned, test=test
+            user_owned=user_owned
         )
 
     return redirect(url_for("bogin"))
@@ -274,6 +273,40 @@ def add_like(task_id):
     mongo.db.tasks.update_one({"_id": ObjectId(task_id)}, {
         "$push": {"likes": username}})
     return redirect(url_for("get_tasks"))
+
+
+@app.route("/get_users")
+def get_users():
+    user = mongo.db.users.find_one(
+        {"user_id": session["user"]})
+
+    users = mongo.db.users.find().sort("username", 1)
+
+    return render_template("users.html", user=user, users=users)
+
+
+@app.route("/add_super/<user_id>")
+def add_super(user_id):
+    user = mongo.db.users.find_one({"_id": ObjectId(user_id)})
+    if user["is_super"]:
+        mongo.db.users.update_one({"_id": ObjectId(user_id)}, {
+            "$set": {"is_super": False}})
+    else:
+        mongo.db.users.update_one({"_id": ObjectId(user_id)}, {
+            "$set": {"is_super": True}})
+    return redirect(url_for("get_users"))
+
+
+@app.route("/edit_user/<user_id>", methods=["GET", "POST"])
+def edit_user(user_id):
+    user = mongo.db.users.find_one({"_id": ObjectId(user_id)})
+    if request.method == "POST":
+        mongo.db.users.update_one({"_id": ObjectId(user_id)}, {
+            "$set": {"username": request.form.get("username")}})
+
+        flash("Username updated successfully")
+        return redirect(url_for("profile", user=user_id))
+    return render_template("edit_user.html", user=user)
 
 
 if __name__ == "__main__":
