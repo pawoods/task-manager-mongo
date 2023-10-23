@@ -303,7 +303,8 @@ def edit_user(user_id):
     if request.method == "POST":
         mongo.db.users.update_one({"_id": ObjectId(user_id)}, {
             "$set": {"username": request.form.get("username")}})
-
+        mongo.db.tasks.update_many({"created_by.user_id": user["user_id"]}, {
+            "$set": {"created_by.username": request.form.get("username")}})
         flash("Username updated successfully")
         return redirect(url_for("profile", user=user_id))
     return render_template("edit_user.html", user=user)
